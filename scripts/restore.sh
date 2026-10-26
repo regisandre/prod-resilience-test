@@ -25,7 +25,7 @@ set -euo pipefail
 
 usage() { sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'; }
 
-mode="${1:-}"; [ $# -gt 0 ] && shift || true
+mode="${1:-}"; if [ $# -gt 0 ]; then shift; fi
 case "$mode" in check|apply) ;; -h|--help|"") usage; exit 0 ;; *) echo "unknown mode: $mode" >&2; usage; exit 2 ;; esac
 
 source_uri="" key="" root="" prefix="restore_" owners="" dry_run=0

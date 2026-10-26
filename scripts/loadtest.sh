@@ -39,7 +39,7 @@ case "$url" in
 esac
 
 server_pid=""
-stop_server() { [ -n "$server_pid" ] && kill "$server_pid" 2>/dev/null || true; }
+stop_server() { if [ -n "$server_pid" ]; then kill "$server_pid" 2>/dev/null || true; fi; }
 trap stop_server EXIT INT TERM
 
 if [ -n "$server_cmd" ]; then

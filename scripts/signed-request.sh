@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
 done
-[ -n "$method" ] && [ -n "$url" ] && [ -n "$secret_env" ] || { usage; exit 2; }
+if [ -z "$method" ] || [ -z "$url" ] || [ -z "$secret_env" ]; then usage; exit 2; fi
 
 [ -n "${!secret_env:-}" ] || { echo "env variable $secret_env is empty or missing" >&2; exit 2; }
 
