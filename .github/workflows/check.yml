@@ -1,0 +1,28 @@
+# Checks the helper scripts on every push and pull request: shellcheck, and a dry run of each.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scripts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+      - name: dry runs
+        run: |
+          set -euo pipefail
+          for s in scripts/*.sh; do bash "$s" --help > /dev/null; done
+          bash scripts/restore.sh check --source /tmp/backup.age --key /tmp/key --dry-run
+          bash scripts/loadtest.sh --url http://127.0.0.1:PORT/ --server-cmd 'true' --steps 1 --runs 1 --dry-run
+          DRY_SECRET=x bash scripts/signed-request.sh --method GET --url https://localhost/x --secret-env DRY_SECRET --dry-run
+      - name: no long dashes or curly quotes
+        run: "! grep -rnP '[\\x{2013}\\x{2014}\\x{2018}\\x{2019}\\x{201C}\\x{201D}\\x{2026}]' --include='*.md' --include='*.sh' ."
